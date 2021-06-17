@@ -1,0 +1,99 @@
+---
+author: "葉曜德 B06901046 電機系"
+title: "brief data analysis"
+
+output:
+  html_document:
+    number_sections: yes
+    highlight: tango
+    toc: yes
+    toc_float:
+      collapsed: no
+    css: style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,comment = '#>',error=TRUE, results = 'hold', out.width='70%', fig.align = 'center', message = FALSE)
+```
+
+```{r}
+# Install packages
+
+#install.packages("rjson")
+#install.packages("hash)
+
+# Import packages
+
+library(dplyr)
+library(rjson)
+library(hash)
+```
+
+```{r}
+# processing csv comment data files
+data_files <- list.files(path = '../data/reviews/', full.names = TRUE)
+data_keys = sapply(sapply(strsplit(data_files, split = "//"), function(parse){
+  key_list <- strsplit(parse[2], split = ".csv")
+  return(key_list)
+}), function(key){
+  return(key)
+})
+
+# processing information json files
+json_files <- fromJSON(file = '../data/places.json')
+json_keys <- names(json_files)
+```
+
+```{r}
+parseJson <- function(keys = json_keys, files = json_files, pointer) {
+  output <- c()
+  for(key in keys) {
+    data <- files[[key]][[pointer]]
+    if(is.null(data)) {
+      output <- c(output, NA)
+    } else if(pointer == "types") {
+      concat <- paste(data, collapse = ",")
+      output <- c(output, concat)
+    } else {
+      output <- c(output, data)
+    }
+  }
+  return(output)
+}
+
+json_df <- data.frame(
+  key = json_keys,
+  name = parseJson(pointer = "name"),
+  types = parseJson(pointer = "types"),
+  rating = parseJson(pointer = "rating"),
+  total_user_ratings = parseJson(pointer = "user_ratings_total")
+)
+```
+
+```{r}
+# constructing dictionary
+data_files
+data_dict <- hash()
+for(i in c(1:length(data_files))) {
+  data_file <- read.csv(data_files[i], encoding = "UTF-8")
+  data_dict[data_keys[i]] <- data_file
+}
+
+# To access the data frame
+df <- data_dict[data_keys[1]][[data_keys[1]]]
+df
+# To link to the data frame of information
+peek <- json_df %>% 
+ filter(key == data_keys[1])
+peek
+```
+
+```{r}
+# Testing area
+#test <- read.csv(data_filess[1], encoding = 'UTF-8')
+#test
+json_df
+library(jsonlite)
+x <- toJSON(json_df)
+cat(x)
+```
