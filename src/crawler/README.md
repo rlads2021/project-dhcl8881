@@ -1,6 +1,6 @@
 # Crawler
 
-## U
+## Usage
 
 ```
 pip install -r requirements.txt
