@@ -1,5 +1,7 @@
 # Rscripts
 
+使用 `preprocessing.sh` 自動執行預處理流程
+
 ## 位置資料
 
 - `read_places.R`: 把 JSON 資料轉換成 dataframe 並儲存到 `../Rdata/places.rds` 包含以下欄位
@@ -21,3 +23,4 @@
   - 將評論資料轉成 tidytext 格式
   - 依照 `place_id` * `rating` 這兩個欄位作為文件，使用 tfidf 分析詞的重要程度
 - `review_jieba_with_name.R`: 本來的評論資料上只有 `place_id`，這個 script 結合位置資料，加上地標的名稱，方便後續分析
+
